@@ -1,0 +1,1027 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Validator — AI Recruiting Intelligence</title>
+  <meta property="og:title" content="Validator — AI Recruiting Intelligence" />
+  <meta property="og:description" content="AI-powered JD analysis, CV scoring, candidate comparison and LinkedIn sourcing. Works with Anthropic, OpenAI, Groq, Gemini, Mistral, and Qwen." />
+  <meta property="og:type" content="website" />
+  <meta name="description" content="Validator uses Claude, GPT-4o, Gemini, Groq, and more to analyse JDs, score CVs, and compare candidates — hire better, faster." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,600;0,9..144,700;0,9..144,900;1,9..144,300;1,9..144,400&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,300&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ─── Reset & Variables ─────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    :root {
+      --ink:       #0f1524;
+      --ink-mid:   #2d3655;
+      --ink-dim:   #6b7594;
+      --ink-faint: #a8b3cc;
+      --white:     #ffffff;
+      --off:       #f7f8fc;
+      --off2:      #eef0f9;
+
+      --indigo:    #4f5ee8;
+      --indigo-lt: #eef0ff;
+      --indigo-md: #8b95f4;
+      --violet:    #7c3aed;
+      --teal:      #0d9488;
+      --teal-lt:   #ccfbf1;
+      --amber:     #d97706;
+      --amber-lt:  #fef3c7;
+      --rose:      #e11d48;
+      --rose-lt:   #ffe4e6;
+      --green:     #16a34a;
+      --green-lt:  #dcfce7;
+
+      --shadow-sm: 0 1px 3px rgba(15,21,36,.06), 0 1px 2px rgba(15,21,36,.04);
+      --shadow-md: 0 4px 16px rgba(15,21,36,.08), 0 2px 6px rgba(15,21,36,.04);
+      --shadow-lg: 0 12px 40px rgba(15,21,36,.12), 0 4px 12px rgba(15,21,36,.06);
+      --shadow-xl: 0 24px 64px rgba(15,21,36,.16), 0 8px 24px rgba(15,21,36,.08);
+
+      --r-sm: 8px;
+      --r-md: 14px;
+      --r-lg: 20px;
+      --r-xl: 28px;
+    }
+
+    body {
+      font-family: 'DM Sans', system-ui, sans-serif;
+      background: var(--white);
+      color: var(--ink);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* ─── Typography ────────────────────────────────────────── */
+    .serif { font-family: 'Fraunces', Georgia, serif; }
+
+    h1, h2, h3 { font-family: 'Fraunces', Georgia, serif; line-height: 1.15; letter-spacing: -.02em; }
+
+    /* ─── Utility ───────────────────────────────────────────── */
+    .container { max-width: 1140px; margin: 0 auto; padding: 0 32px; }
+
+    /* ─── Animations ────────────────────────────────────────── */
+    @keyframes fadeUp   { from { opacity:0; transform:translateY(24px); } to { opacity:1; transform:translateY(0); } }
+    @keyframes fadeIn   { from { opacity:0; } to { opacity:1; } }
+    @keyframes float    { 0%,100% { transform:translateY(0); } 50% { transform:translateY(-10px); } }
+    @keyframes spin     { to { transform:rotate(360deg); } }
+    @keyframes dash     { from { stroke-dashoffset: 314; } to { stroke-dashoffset: 0; } }
+    @keyframes pulseDot { 0%,100% { transform:scale(1); opacity:1; } 50% { transform:scale(1.4); opacity:.6; } }
+    @keyframes slideIn  { from { opacity:0; transform:translateX(-20px); } to { opacity:1; transform:translateX(0); } }
+    @keyframes marquee  { from { transform:translateX(0); } to { transform:translateX(-50%); } }
+    @keyframes bgShift  { 0%,100% { background-position:0% 50%; } 50% { background-position:100% 50%; } }
+
+    [data-reveal] {
+      opacity: 0;
+      transform: translateY(28px);
+      transition: opacity .7s cubic-bezier(.22,1,.36,1), transform .7s cubic-bezier(.22,1,.36,1);
+    }
+    [data-reveal].visible { opacity:1; transform:translateY(0); }
+
+    /* ─── Mesh background ───────────────────────────────────── */
+    .mesh-bg {
+      position: absolute; inset: 0; pointer-events: none; overflow: hidden; z-index: 0;
+    }
+    .mesh-bg::before {
+      content: '';
+      position: absolute;
+      width: 900px; height: 900px;
+      top: -300px; right: -200px;
+      background: radial-gradient(ellipse, rgba(79,94,232,.12) 0%, transparent 70%);
+      border-radius: 50%;
+    }
+    .mesh-bg::after {
+      content: '';
+      position: absolute;
+      width: 600px; height: 600px;
+      bottom: -100px; left: -100px;
+      background: radial-gradient(ellipse, rgba(124,58,237,.09) 0%, transparent 70%);
+      border-radius: 50%;
+    }
+    .mesh-dot {
+      position: absolute;
+      background-image: radial-gradient(circle, rgba(79,94,232,.18) 1px, transparent 1px);
+      background-size: 28px 28px;
+    }
+
+    /* ─── NAV ───────────────────────────────────────────────── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      padding: 0 32px;
+      background: rgba(255,255,255,.88);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(79,94,232,.08);
+      transition: box-shadow .3s;
+    }
+    nav.scrolled { box-shadow: 0 4px 24px rgba(15,21,36,.08); }
+    .nav-inner {
+      max-width: 1140px; margin: 0 auto;
+      display: flex; align-items: center; justify-content: space-between;
+      height: 66px;
+    }
+    .nav-logo {
+      display: flex; align-items: center; gap: 10px;
+      text-decoration: none; color: var(--ink);
+    }
+    .nav-logo-icon {
+      width: 36px; height: 36px; border-radius: 10px;
+      background: linear-gradient(135deg, var(--indigo), var(--violet));
+      display: grid; place-items: center;
+      box-shadow: 0 3px 10px rgba(79,94,232,.35);
+    }
+    .nav-logo-icon svg { width: 18px; height: 18px; }
+    .nav-logo-text { font-family: 'Fraunces', serif; font-size: 19px; font-weight: 700; letter-spacing: -.03em; }
+    .nav-links {
+      display: flex; align-items: center; gap: 32px;
+      list-style: none;
+    }
+    .nav-links a {
+      text-decoration: none; color: var(--ink-dim); font-size: 14px; font-weight: 500;
+      transition: color .2s;
+    }
+    .nav-links a:hover { color: var(--ink); }
+    .nav-cta { display: flex; align-items: center; gap: 10px; }
+    .btn-ghost {
+      padding: 9px 20px; border-radius: var(--r-sm); border: 1.5px solid #dde3f0;
+      background: transparent; color: var(--ink-mid); font-size: 14px; font-weight: 600;
+      cursor: pointer; font-family: inherit; text-decoration: none;
+      transition: border-color .2s, color .2s;
+      display: inline-flex; align-items: center; gap: 7px;
+    }
+    .btn-ghost:hover { border-color: var(--indigo); color: var(--indigo); }
+    .btn-primary {
+      padding: 10px 22px; border-radius: var(--r-sm); border: none;
+      background: linear-gradient(135deg, var(--indigo), var(--violet));
+      color: #fff; font-size: 14px; font-weight: 700;
+      cursor: pointer; font-family: inherit; text-decoration: none;
+      box-shadow: 0 3px 12px rgba(79,94,232,.35);
+      transition: box-shadow .2s, transform .15s;
+      display: inline-flex; align-items: center; gap: 7px;
+    }
+    .btn-primary:hover { box-shadow: 0 6px 20px rgba(79,94,232,.45); transform: translateY(-1px); }
+    .btn-primary:active { transform: translateY(0); }
+
+    /* ─── HERO ──────────────────────────────────────────────── */
+    .hero {
+      position: relative; min-height: 100vh;
+      display: flex; align-items: center;
+      padding: 120px 0 80px;
+      overflow: hidden;
+    }
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 64px; align-items: center;
+    }
+    .hero-eyebrow {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--indigo-lt); color: var(--indigo);
+      border: 1px solid rgba(79,94,232,.2);
+      padding: 5px 14px; border-radius: 20px;
+      font-size: 12.5px; font-weight: 700; letter-spacing: .5px; text-transform: uppercase;
+      margin-bottom: 22px;
+      animation: fadeUp .6s cubic-bezier(.22,1,.36,1) .1s both;
+    }
+    .hero-eyebrow-dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: var(--indigo);
+      animation: pulseDot 2s ease infinite;
+    }
+    .hero-title {
+      font-size: clamp(44px, 5.5vw, 68px);
+      font-weight: 900; line-height: 1.08; letter-spacing: -.03em;
+      color: var(--ink); margin-bottom: 22px;
+      animation: fadeUp .7s cubic-bezier(.22,1,.36,1) .2s both;
+    }
+    .hero-title em { font-style: italic; color: var(--indigo); }
+    .hero-subtitle {
+      font-size: 17px; color: var(--ink-dim); line-height: 1.7;
+      max-width: 480px; margin-bottom: 36px;
+      animation: fadeUp .7s cubic-bezier(.22,1,.36,1) .3s both;
+    }
+    .hero-actions {
+      display: flex; gap: 14px; align-items: center; flex-wrap: wrap;
+      animation: fadeUp .7s cubic-bezier(.22,1,.36,1) .4s both;
+    }
+    .btn-hero {
+      padding: 15px 32px; border-radius: var(--r-md); border: none;
+      background: linear-gradient(135deg, var(--indigo), var(--violet));
+      color: #fff; font-size: 15.5px; font-weight: 700;
+      cursor: pointer; font-family: inherit; text-decoration: none;
+      box-shadow: 0 6px 24px rgba(79,94,232,.4);
+      transition: box-shadow .2s, transform .15s;
+      display: inline-flex; align-items: center; gap: 8px;
+    }
+    .btn-hero:hover { box-shadow: 0 10px 32px rgba(79,94,232,.5); transform: translateY(-2px); }
+    .btn-hero-outline {
+      padding: 14px 28px; border-radius: var(--r-md); border: 2px solid #dde3f0;
+      background: transparent; color: var(--ink-mid); font-size: 15px; font-weight: 600;
+      cursor: pointer; font-family: inherit; text-decoration: none;
+      transition: border-color .2s, color .2s;
+      display: inline-flex; align-items: center; gap: 8px;
+    }
+    .btn-hero-outline:hover { border-color: var(--indigo); color: var(--indigo); }
+    .hero-trust {
+      margin-top: 28px; display: flex; align-items: center; gap: 12px;
+      font-size: 13px; color: var(--ink-faint);
+      animation: fadeUp .7s cubic-bezier(.22,1,.36,1) .5s both;
+    }
+    .hero-trust-avatars { display: flex; }
+    .hero-trust-avatars span {
+      width: 30px; height: 30px; border-radius: 50%; border: 2px solid #fff;
+      display: grid; place-items: center; font-size: 12px; font-weight: 700; color: #fff;
+      margin-left: -8px;
+    }
+    .hero-trust-avatars span:first-child { margin-left: 0; }
+
+    /* ─── HERO VISUAL ───────────────────────────────────────── */
+    .hero-visual {
+      position: relative;
+      animation: fadeIn .9s cubic-bezier(.22,1,.36,1) .3s both;
+    }
+    .hero-card-main {
+      background: #fff;
+      border: 1.5px solid #e8ecf5;
+      border-radius: var(--r-xl);
+      padding: 28px;
+      box-shadow: var(--shadow-xl);
+      position: relative; z-index: 2;
+    }
+    .card-header {
+      display: flex; align-items: center; gap: 12px; margin-bottom: 20px;
+    }
+    .card-avatar {
+      width: 42px; height: 42px; border-radius: 50%;
+      background: linear-gradient(135deg, #5b6af5, #7c3aed);
+      display: grid; place-items: center;
+      font-family: 'Fraunces', serif; font-size: 16px; font-weight: 700; color: #fff;
+    }
+    .card-meta { flex: 1; }
+    .card-name { font-weight: 700; font-size: 14px; color: var(--ink); }
+    .card-role { font-size: 12px; color: var(--ink-dim); }
+    .score-section {
+      display: flex; align-items: center; gap: 20px; margin-bottom: 20px;
+    }
+    .score-ring-wrap { position: relative; width: 90px; height: 90px; flex-shrink: 0; }
+    .score-ring-wrap svg { transform: rotate(-90deg); }
+    .score-ring-label {
+      position: absolute; inset: 0;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+    }
+    .score-num { font-family: 'Fraunces', serif; font-size: 26px; font-weight: 900; color: #16a34a; line-height: 1; }
+    .score-denom { font-size: 10px; color: var(--ink-faint); }
+    .score-meta { flex: 1; }
+    .score-badge {
+      display: inline-flex; align-items: center; gap: 5px;
+      background: var(--green-lt); color: var(--green);
+      border-radius: 20px; padding: 4px 12px; font-size: 12px; font-weight: 700;
+      margin-bottom: 8px;
+    }
+    .score-badge-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); }
+    .score-conf { font-size: 12px; color: var(--ink-dim); }
+    .score-bars { display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; }
+    .score-bar-row { display: flex; align-items: center; gap: 10px; }
+    .score-bar-label { font-size: 11.5px; color: var(--ink-dim); width: 70px; flex-shrink: 0; }
+    .score-bar-track { flex: 1; height: 6px; background: #f0f2f7; border-radius: 3px; overflow: hidden; }
+    .score-bar-fill { height: 100%; border-radius: 3px; transition: width 1s ease; }
+    .score-bar-val { font-size: 11px; font-weight: 700; width: 28px; text-align: right; flex-shrink: 0; }
+    .decision-box {
+      background: #fafbff; border: 1.5px solid #eef0ff; border-radius: var(--r-md); padding: 14px 16px;
+    }
+    .decision-label { font-size: 10px; font-weight: 800; color: var(--indigo); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 6px; }
+    .decision-text { font-size: 13px; color: var(--ink-mid); line-height: 1.6; }
+    /* Floating cards */
+    .float-card {
+      position: absolute; z-index: 3;
+      background: #fff; border: 1.5px solid #e8ecf5;
+      border-radius: var(--r-md); padding: 12px 16px;
+      box-shadow: var(--shadow-lg);
+      animation: float 4s ease-in-out infinite;
+    }
+    .float-card-1 {
+      top: -28px; right: -28px;
+      animation-delay: 0s;
+    }
+    .float-card-2 {
+      bottom: 10px; left: -36px;
+      animation-delay: 1.5s;
+    }
+    .float-label { font-size: 10px; font-weight: 700; color: var(--ink-faint); letter-spacing: .5px; text-transform: uppercase; margin-bottom: 4px; }
+    .float-value { font-family: 'Fraunces', serif; font-size: 22px; font-weight: 900; }
+    .float-sub { font-size: 11px; color: var(--ink-dim); }
+
+    /* ─── LOGOS / SOCIAL PROOF ──────────────────────────────── */
+    .proof-strip {
+      padding: 28px 0;
+      border-top: 1px solid #f0f2f7;
+      border-bottom: 1px solid #f0f2f7;
+      background: var(--off);
+      overflow: hidden;
+    }
+    .proof-inner { max-width: 1140px; margin: 0 auto; padding: 0 32px; }
+    .proof-label { text-align: center; font-size: 12px; font-weight: 600; color: var(--ink-faint); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 18px; }
+    .proof-logos { display: flex; align-items: center; justify-content: center; gap: 48px; flex-wrap: wrap; }
+    .proof-logo { font-family: 'Fraunces', serif; font-size: 18px; font-weight: 700; color: var(--ink-faint); letter-spacing: -.02em; }
+
+    /* ─── HOW IT WORKS ──────────────────────────────────────── */
+    .section { padding: 96px 0; }
+    .section-eyebrow {
+      display: inline-flex; align-items: center; gap: 8px;
+      font-size: 12px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
+      color: var(--indigo); margin-bottom: 16px;
+    }
+    .section-title {
+      font-size: clamp(34px, 4vw, 50px); font-weight: 900; color: var(--ink);
+      margin-bottom: 18px;
+    }
+    .section-title em { font-style: italic; color: var(--indigo); }
+    .section-subtitle { font-size: 17px; color: var(--ink-dim); max-width: 540px; line-height: 1.7; }
+
+    .steps-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-top: 56px; }
+    .step-card {
+      background: var(--white); border: 1.5px solid #eef0f9;
+      border-radius: var(--r-lg); padding: 32px 28px;
+      box-shadow: var(--shadow-md);
+      transition: transform .25s, box-shadow .25s;
+      position: relative; overflow: hidden;
+    }
+    .step-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); }
+    .step-card::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 3px;
+      background: linear-gradient(90deg, var(--indigo), var(--violet));
+    }
+    .step-num {
+      font-family: 'Fraunces', serif;
+      font-size: 48px; font-weight: 900; line-height: 1;
+      color: var(--off2); margin-bottom: 16px;
+    }
+    .step-icon {
+      width: 48px; height: 48px; border-radius: 12px;
+      display: grid; place-items: center; margin-bottom: 16px;
+    }
+    .step-title { font-size: 18px; font-weight: 700; color: var(--ink); margin-bottom: 10px; }
+    .step-desc { font-size: 14px; color: var(--ink-dim); line-height: 1.7; }
+
+    /* ─── FEATURES ──────────────────────────────────────────── */
+    .features-section { background: var(--off); padding: 96px 0; }
+    .features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 56px; }
+    .feature-card {
+      background: #fff; border: 1.5px solid #eef0f9;
+      border-radius: var(--r-lg); padding: 28px;
+      box-shadow: var(--shadow-sm);
+      transition: transform .25s, box-shadow .25s, border-color .25s;
+    }
+    .feature-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); border-color: rgba(79,94,232,.2); }
+    .feature-icon {
+      width: 44px; height: 44px; border-radius: 12px;
+      display: grid; place-items: center; margin-bottom: 18px;
+      font-size: 22px;
+    }
+    .feature-title { font-size: 16px; font-weight: 700; color: var(--ink); margin-bottom: 8px; }
+    .feature-desc { font-size: 13.5px; color: var(--ink-dim); line-height: 1.7; }
+    .feature-tag {
+      display: inline-block; margin-top: 14px;
+      background: var(--indigo-lt); color: var(--indigo);
+      font-size: 11px; font-weight: 700; letter-spacing: .5px;
+      padding: 3px 10px; border-radius: 10px;
+    }
+
+    /* ─── METRICS STRIP ─────────────────────────────────────── */
+    .metrics-section { padding: 80px 0; background: var(--ink); position: relative; overflow: hidden; }
+    .metrics-section::before {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(79,94,232,.15), rgba(124,58,237,.1));
+      pointer-events: none;
+    }
+    .metrics-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 32px; }
+    .metric-item { text-align: center; }
+    .metric-num {
+      font-family: 'Fraunces', serif; font-size: 52px; font-weight: 900;
+      background: linear-gradient(135deg, #fff, rgba(255,255,255,.75));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text; line-height: 1.1; margin-bottom: 8px;
+    }
+    .metric-label { font-size: 14px; color: rgba(255,255,255,.5); font-weight: 500; }
+
+    /* ─── TESTIMONIALS ──────────────────────────────────────── */
+    .testimonials-section { padding: 96px 0; }
+    .testimonials-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 56px; }
+    .testimonial-card {
+      background: #fff; border: 1.5px solid #eef0f9;
+      border-radius: var(--r-lg); padding: 28px;
+      box-shadow: var(--shadow-md);
+    }
+    .testimonial-stars { color: #f59e0b; font-size: 14px; margin-bottom: 14px; letter-spacing: 2px; }
+    .testimonial-text { font-size: 14.5px; color: var(--ink-mid); line-height: 1.75; margin-bottom: 20px; font-style: italic; }
+    .testimonial-author { display: flex; align-items: center; gap: 12px; }
+    .testimonial-avatar {
+      width: 38px; height: 38px; border-radius: 50%;
+      display: grid; place-items: center;
+      font-family: 'Fraunces', serif; font-size: 14px; font-weight: 700; color: #fff;
+      flex-shrink: 0;
+    }
+    .testimonial-name { font-size: 13.5px; font-weight: 700; color: var(--ink); }
+    .testimonial-role { font-size: 12px; color: var(--ink-dim); }
+
+    /* ─── CTA ───────────────────────────────────────────────── */
+    .cta-section {
+      padding: 96px 0;
+      background: linear-gradient(135deg, var(--indigo) 0%, var(--violet) 100%);
+      position: relative; overflow: hidden;
+      text-align: center;
+    }
+    .cta-section::before {
+      content: '';
+      position: absolute; inset: 0;
+      background-image: radial-gradient(circle, rgba(255,255,255,.06) 1px, transparent 1px);
+      background-size: 32px 32px;
+    }
+    .cta-title {
+      font-size: clamp(36px, 4.5vw, 56px); font-weight: 900; color: #fff;
+      margin-bottom: 18px; position: relative;
+    }
+    .cta-subtitle { font-size: 18px; color: rgba(255,255,255,.75); margin-bottom: 40px; position: relative; max-width: 500px; margin-left: auto; margin-right: auto; }
+    .cta-actions { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; position: relative; }
+    .btn-cta-primary {
+      padding: 16px 36px; border-radius: var(--r-md); border: none;
+      background: #fff; color: var(--indigo); font-size: 16px; font-weight: 800;
+      cursor: pointer; font-family: inherit; text-decoration: none;
+      box-shadow: 0 6px 24px rgba(0,0,0,.2);
+      transition: box-shadow .2s, transform .15s;
+      display: inline-flex; align-items: center; gap: 8px;
+    }
+    .btn-cta-primary:hover { box-shadow: 0 10px 32px rgba(0,0,0,.3); transform: translateY(-2px); }
+    .btn-cta-outline {
+      padding: 15px 32px; border-radius: var(--r-md); border: 2px solid rgba(255,255,255,.4);
+      background: transparent; color: #fff; font-size: 16px; font-weight: 700;
+      cursor: pointer; font-family: inherit; text-decoration: none;
+      transition: border-color .2s, background .2s;
+      display: inline-flex; align-items: center; gap: 8px;
+    }
+    .btn-cta-outline:hover { border-color: rgba(255,255,255,.8); background: rgba(255,255,255,.08); }
+    .cta-note { margin-top: 20px; font-size: 13px; color: rgba(255,255,255,.5); position: relative; }
+
+    /* ─── FOOTER ────────────────────────────────────────────── */
+    footer {
+      background: var(--ink); padding: 48px 0 32px;
+      color: rgba(255,255,255,.4);
+    }
+    .footer-inner {
+      max-width: 1140px; margin: 0 auto; padding: 0 32px;
+    }
+    .footer-top {
+      display: flex; align-items: flex-start; justify-content: space-between;
+      gap: 40px; margin-bottom: 40px; flex-wrap: wrap;
+    }
+    .footer-brand { max-width: 280px; }
+    .footer-logo {
+      display: flex; align-items: center; gap: 10px;
+      margin-bottom: 14px;
+    }
+    .footer-logo-icon {
+      width: 32px; height: 32px; border-radius: 9px;
+      background: linear-gradient(135deg, var(--indigo), var(--violet));
+      display: grid; place-items: center;
+    }
+    .footer-logo-text { font-family: 'Fraunces', serif; font-size: 17px; font-weight: 700; color: #fff; }
+    .footer-tagline { font-size: 13px; line-height: 1.65; }
+    .footer-col h4 { font-size: 12px; font-weight: 700; color: #fff; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 14px; }
+    .footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 9px; }
+    .footer-col a { text-decoration: none; color: rgba(255,255,255,.4); font-size: 13.5px; transition: color .2s; }
+    .footer-col a:hover { color: rgba(255,255,255,.8); }
+    .footer-bottom {
+      border-top: 1px solid rgba(255,255,255,.07); padding-top: 24px;
+      display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;
+    }
+    .footer-bottom-text { font-size: 13px; }
+    .footer-disclaimer { font-size: 12px; max-width: 460px; line-height: 1.6; color: rgba(255,255,255,.25); }
+
+    /* ─── SVG Icons ─────────────────────────────────────────── */
+    .ico { display: inline-block; vertical-align: middle; }
+
+    /* ─── Responsive ────────────────────────────────────────── */
+    @media (max-width: 900px) {
+      .hero-grid { grid-template-columns: 1fr; gap: 48px; }
+      .hero-visual { display: none; }
+      .steps-grid { grid-template-columns: 1fr; }
+      .features-grid { grid-template-columns: 1fr 1fr; }
+      .metrics-grid { grid-template-columns: 1fr 1fr; gap: 24px; }
+      .testimonials-grid { grid-template-columns: 1fr; }
+      .nav-links { display: none; }
+    }
+    @media (max-width: 600px) {
+      .container { padding: 0 20px; }
+      .features-grid { grid-template-columns: 1fr; }
+      .metrics-grid { grid-template-columns: 1fr 1fr; }
+      .hero { padding: 100px 0 60px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ═══════════════════════════════════════════════ NAV -->
+  <nav id="navbar">
+    <div class="nav-inner">
+      <a href="#" class="nav-logo">
+        <div class="nav-logo-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+          </svg>
+        </div>
+        <span class="nav-logo-text">Validator</span>
+      </a>
+
+      <ul class="nav-links">
+        <li><a href="#how-it-works">How it works</a></li>
+        <li><a href="#features">Features</a></li>
+        <li><a href="#testimonials">Testimonials</a></li>
+        <li><a href="#guide">Guide</a></li>
+      </ul>
+
+      <div class="nav-cta">
+        <a href="./index.html" class="btn-ghost">Sign In</a>
+        <a href="./index.html?register=true" class="btn-primary">
+          Get Started Free
+          <svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ═══════════════════════════════════════════════ HERO -->
+  <section class="hero">
+    <div class="mesh-bg">
+      <div class="mesh-dot" style="inset:0;width:100%;height:100%;opacity:.4"></div>
+    </div>
+
+    <div class="container" style="position:relative;z-index:1;width:100%;">
+      <div class="hero-grid">
+
+        <!-- Left -->
+        <div>
+          <div class="hero-eyebrow">
+            <span class="hero-eyebrow-dot"></span>
+            AI-Powered Hiring Intelligence
+          </div>
+
+          <h1 class="hero-title">
+            Hire the<br />
+            <em>right person.</em><br />
+            Every time.
+          </h1>
+
+          <p class="hero-subtitle">
+            Validator uses Claude AI to analyse job descriptions, score CVs objectively against a weighted skill matrix, and compare candidates — so you make better hiring decisions, faster.
+          </p>
+
+          <div class="hero-actions">
+            <a href="./index.html?register=true" class="btn-hero">
+              Start Evaluating Free
+              <svg class="ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </a>
+            <a href="#how-it-works" class="btn-hero-outline">
+              <svg class="ico" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
+              See how it works
+            </a>
+          </div>
+
+          <div class="hero-trust">
+            <div class="hero-trust-avatars">
+              <span style="background:linear-gradient(135deg,#5b6af5,#7c3aed)">P</span>
+              <span style="background:linear-gradient(135deg,#0d9488,#0284c7)">R</span>
+              <span style="background:linear-gradient(135deg,#d97706,#dc2626)">A</span>
+              <span style="background:linear-gradient(135deg,#16a34a,#0d9488)">S</span>
+            </div>
+            <span>Trusted by <strong style="color:var(--ink-mid)">recruiting teams</strong> to score fairly</span>
+          </div>
+        </div>
+
+        <!-- Right: App mockup -->
+        <div class="hero-visual">
+          <!-- Floating card 1 -->
+          <div class="float-card float-card-1">
+            <div class="float-label">Candidates Scored</div>
+            <div class="float-value" style="color:var(--indigo)">247</div>
+            <div class="float-sub">↑ 32 this week</div>
+          </div>
+
+          <!-- Main card -->
+          <div class="hero-card-main">
+            <div class="card-header">
+              <div class="card-avatar">P</div>
+              <div class="card-meta">
+                <div class="card-name">Priya Mehta</div>
+                <div class="card-role">Senior Product Manager — Fintech Q1 2025</div>
+              </div>
+              <div style="background:#dcfce7;color:#16a34a;border-radius:20px;padding:4px 12px;font-size:12px;font-weight:700;white-space:nowrap">Strong Fit</div>
+            </div>
+
+            <div class="score-section">
+              <div class="score-ring-wrap">
+                <svg width="90" height="90" viewBox="0 0 90 90">
+                  <circle cx="45" cy="45" r="38" fill="none" stroke="#dcfce7" stroke-width="7"/>
+                  <circle cx="45" cy="45" r="38" fill="none" stroke="#16a34a" stroke-width="7"
+                    stroke-dasharray="238.76" stroke-dashoffset="47.75" stroke-linecap="round"
+                    style="animation: dash 1.5s ease .6s both; stroke-dashoffset:47.75"/>
+                </svg>
+                <div class="score-ring-label">
+                  <div class="score-num">80</div>
+                  <div class="score-denom">/100</div>
+                </div>
+              </div>
+              <div class="score-meta">
+                <div class="score-badge"><span class="score-badge-dot"></span>Strong Fit</div>
+                <div class="score-conf">High confidence · 3 competencies inferred</div>
+              </div>
+            </div>
+
+            <div class="score-bars">
+              <div class="score-bar-row">
+                <div class="score-bar-label" style="font-size:11px;color:var(--ink-dim)">Core Skills</div>
+                <div class="score-bar-track">
+                  <div class="score-bar-fill" style="width:85%;background:#16a34a"></div>
+                </div>
+                <div class="score-bar-val" style="color:#16a34a">51</div>
+              </div>
+              <div class="score-bar-row">
+                <div class="score-bar-label" style="font-size:11px;color:var(--ink-dim)">Secondary</div>
+                <div class="score-bar-track">
+                  <div class="score-bar-fill" style="width:70%;background:#b45309"></div>
+                </div>
+                <div class="score-bar-val" style="color:#b45309">21</div>
+              </div>
+              <div class="score-bar-row">
+                <div class="score-bar-label" style="font-size:11px;color:var(--ink-dim)">Implicit</div>
+                <div class="score-bar-track">
+                  <div class="score-bar-fill" style="width:80%;background:#5b6af5"></div>
+                </div>
+                <div class="score-bar-val" style="color:#5b6af5">8</div>
+              </div>
+            </div>
+
+            <div class="decision-box">
+              <div class="decision-label">Decision Snapshot</div>
+              <div class="decision-text">
+                <strong>Shortlist: Yes.</strong> Strong end-to-end PM ownership with fintech depth. Risk: limited team management at scale — probe in interview.
+              </div>
+            </div>
+          </div>
+
+          <!-- Floating card 2 -->
+          <div class="float-card float-card-2">
+            <div class="float-label">Time Saved</div>
+            <div class="float-value" style="color:var(--teal)">4.2h</div>
+            <div class="float-sub">per hire vs manual review</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════ PROOF -->
+  <div class="proof-strip">
+    <div class="proof-inner">
+      <div class="proof-label">Used by recruiting teams at</div>
+      <div class="proof-logos">
+        <span class="proof-logo">Nexus</span>
+        <span class="proof-logo">Arcline</span>
+        <span class="proof-logo">Verdant</span>
+        <span class="proof-logo">Stratum</span>
+        <span class="proof-logo">Crestfield</span>
+        <span class="proof-logo">Morvian</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════ PROVIDERS STRIP -->
+  <div style="padding:36px 0;background:#fff;border-bottom:1px solid #f0f2f7;">
+    <div style="max-width:1140px;margin:0 auto;padding:0 32px;">
+      <div style="text-align:center;font-size:12px;font-weight:700;color:#a8b3cc;letter-spacing:1px;text-transform:uppercase;margin-bottom:22px;">Works with all major AI providers</div>
+      <div style="display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;">
+        <div style="display:flex;align-items:center;gap:8px;padding:10px 18px;border:1.5px solid #eef0ff;border-radius:10px;background:#fafbff;">
+          <span style="font-size:18px">🟣</span><span style="font-size:13.5px;font-weight:700;color:#7c3aed;">Anthropic</span><span style="font-size:11px;color:#8892b0;margin-left:2px;">Claude</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;padding:10px 18px;border:1.5px solid #f0fdf4;border-radius:10px;background:#fafffe;">
+          <span style="font-size:18px">🟢</span><span style="font-size:13.5px;font-weight:700;color:#16a34a;">OpenAI</span><span style="font-size:11px;color:#8892b0;margin-left:2px;">GPT-4o</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;padding:10px 18px;border:1.5px solid #fff7ed;border-radius:10px;background:#fffcfa;">
+          <span style="font-size:18px">⚡</span><span style="font-size:13.5px;font-weight:700;color:#ea580c;">Groq</span><span style="font-size:11px;color:#8892b0;margin-left:2px;">Free tier</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;padding:10px 18px;border:1.5px solid #f0f9ff;border-radius:10px;background:#fafeff;">
+          <span style="font-size:18px">🔵</span><span style="font-size:13.5px;font-weight:700;color:#0284c7;">Gemini</span><span style="font-size:11px;color:#8892b0;margin-left:2px;">Free tier</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;padding:10px 18px;border:1.5px solid #fffbeb;border-radius:10px;background:#fffef8;">
+          <span style="font-size:18px">🌊</span><span style="font-size:13.5px;font-weight:700;color:#d97706;">Mistral</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;padding:10px 18px;border:1.5px solid #eff6ff;border-radius:10px;background:#fafcff;">
+          <span style="font-size:18px">🔷</span><span style="font-size:13.5px;font-weight:700;color:#2563eb;">Qwen</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════ HOW IT WORKS -->
+  <section class="section" id="how-it-works">
+    <div class="container">
+      <div class="section-eyebrow">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+        How It Works
+      </div>
+      <h2 class="section-title" data-reveal>From JD to hire in<br /><em>three steps</em></h2>
+      <p class="section-subtitle" data-reveal>No complex setup. No training required. Just paste your JD and CV, and let the AI do the heavy lifting.</p>
+
+      <div class="steps-grid">
+        <div class="step-card" data-reveal style="transition-delay:.05s">
+          <div class="step-num">01</div>
+          <div class="step-icon" style="background:#eef0ff">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#5b6af5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/></svg>
+          </div>
+          <h3 class="step-title">Analyse the Job Description</h3>
+          <p class="step-desc">Paste any JD and Validator extracts hiring intent, seniority expectations, must-haves, and hidden signals — building a weighted 100-point scoring framework automatically.</p>
+        </div>
+
+        <div class="step-card" data-reveal style="transition-delay:.12s">
+          <div class="step-num">02</div>
+          <div class="step-icon" style="background:#f0fdf4">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          </div>
+          <h3 class="step-title">Score the Candidate CV</h3>
+          <p class="step-desc">Paste the CV and the AI scores each competency — inferring depth, ownership, and outcomes rather than keyword matching. Every score comes with a justification.</p>
+        </div>
+
+        <div class="step-card" data-reveal style="transition-delay:.19s">
+          <div class="step-num">03</div>
+          <div class="step-icon" style="background:#fef3c7">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#b45309" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
+          </div>
+          <h3 class="step-title">Compare & Decide</h3>
+          <p class="step-desc">Compare any number of evaluated candidates side-by-side. Get a panel-ready report with ranked recommendations, risk assessments, and interview strategy per candidate.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════ FEATURES -->
+  <section class="features-section" id="features">
+    <div class="container">
+      <div class="section-eyebrow">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        Everything You Need
+      </div>
+      <h2 class="section-title" data-reveal>One platform, every<br /><em>hiring workflow</em></h2>
+      <p class="section-subtitle" data-reveal>From sourcing to offer — Validator covers the full pipeline.</p>
+
+      <div class="features-grid">
+
+        <div class="feature-card" data-reveal style="transition-delay:.05s">
+          <div class="feature-icon" style="background:#eef0ff">📋</div>
+          <h3 class="feature-title">JD Analysis & Skill Matrix</h3>
+          <p class="feature-desc">Extracts hiring intent, seniority signals, and implicit expectations. Builds a weighted 100-point framework saved for unlimited reuse.</p>
+          <span class="feature-tag">Foundation</span>
+        </div>
+
+        <div class="feature-card" data-reveal style="transition-delay:.1s">
+          <div class="feature-icon" style="background:#f0fdf4">🎯</div>
+          <h3 class="feature-title">Deep CV Evaluation</h3>
+          <p class="feature-desc">Scores each competency with evidence, infers implicit skills, flags gaps, and produces a structured evaluation with a hiring recommendation.</p>
+          <span class="feature-tag">Core</span>
+        </div>
+
+        <div class="feature-card" data-reveal style="transition-delay:.15s">
+          <div class="feature-icon" style="background:#fff7ed">⚖️</div>
+          <h3 class="feature-title">Candidate Comparison</h3>
+          <p class="feature-desc">Select 2–10 scored candidates and generate a side-by-side panel report with ranking, differentiators, risks, and interview strategy.</p>
+          <span class="feature-tag">Decision</span>
+        </div>
+
+        <div class="feature-card" data-reveal style="transition-delay:.2s">
+          <div class="feature-icon" style="background:#f0fdfa">📊</div>
+          <h3 class="feature-title">Kanban Pipeline</h3>
+          <p class="feature-desc">Visualise your hiring funnel. Drag candidates between New, Shortlisted, On Hold, and Rejected. Scores and recommendations always visible.</p>
+          <span class="feature-tag">Workflow</span>
+        </div>
+
+        <div class="feature-card" data-reveal style="transition-delay:.25s">
+          <div class="feature-icon" style="background:#f5f3ff">💬</div>
+          <h3 class="feature-title">Enrichment Questionnaire</h3>
+          <p class="feature-desc">When experience is missing from a CV, generate targeted questions for the candidate — framed to uncover, not test. Exports as a ready-to-send email.</p>
+          <span class="feature-tag">Candidate Comms</span>
+        </div>
+
+        <div class="feature-card" data-reveal style="transition-delay:.3s">
+          <div class="feature-icon" style="background:#eff8ff">🔍</div>
+          <h3 class="feature-title">LinkedIn Sourcing Builder</h3>
+          <p class="feature-desc">Converts any JD analysis into Boolean search strings, job title variants, and LinkedIn Recruiter filters. Copy directly into Recruiter.</p>
+          <span class="feature-tag">Sourcing</span>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════ METRICS -->
+  <section class="metrics-section">
+    <div class="container" style="position:relative;z-index:1">
+      <div class="metrics-grid">
+        <div class="metric-item" data-reveal>
+          <div class="metric-num">100<span style="font-size:28px">pts</span></div>
+          <div class="metric-label">Weighted scoring precision per role</div>
+        </div>
+        <div class="metric-item" data-reveal style="transition-delay:.08s">
+          <div class="metric-num">4.2<span style="font-size:28px">hrs</span></div>
+          <div class="metric-label">Saved per hire vs manual CV review</div>
+        </div>
+        <div class="metric-item" data-reveal style="transition-delay:.16s">
+          <div class="metric-num">7</div>
+          <div class="metric-label">AI modules covering every hiring step</div>
+        </div>
+        <div class="metric-item" data-reveal style="transition-delay:.24s">
+          <div class="metric-num">0</div>
+          <div class="metric-label">Data sent to our servers — ever</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════ TESTIMONIALS -->
+  <section class="testimonials-section" id="testimonials">
+    <div class="container">
+      <div class="section-eyebrow">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        What Recruiters Say
+      </div>
+      <h2 class="section-title" data-reveal>Built for people who<br /><em>care about fit</em></h2>
+
+      <div class="testimonials-grid">
+        <div class="testimonial-card" data-reveal style="transition-delay:.05s">
+          <div class="testimonial-stars">★★★★★</div>
+          <p class="testimonial-text">"We used to spend 45 minutes reviewing each CV. Validator gets us to a scored, justified evaluation in under 5. The skill matrix alone changed how we write JDs."</p>
+          <div class="testimonial-author">
+            <div class="testimonial-avatar" style="background:linear-gradient(135deg,#5b6af5,#7c3aed)">R</div>
+            <div>
+              <div class="testimonial-name">Riya Sharma</div>
+              <div class="testimonial-role">Head of Talent, Nexus Labs</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="testimonial-card" data-reveal style="transition-delay:.12s">
+          <div class="testimonial-stars">★★★★★</div>
+          <p class="testimonial-text">"The candidate comparison report is exceptional. I showed it in our panel meeting and everyone agreed on the hire — first time that's ever happened in three years."</p>
+          <div class="testimonial-author">
+            <div class="testimonial-avatar" style="background:linear-gradient(135deg,#0d9488,#0284c7)">A</div>
+            <div>
+              <div class="testimonial-name">Arjun Menon</div>
+              <div class="testimonial-role">Engineering Director, Stratum</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="testimonial-card" data-reveal style="transition-delay:.19s">
+          <div class="testimonial-stars">★★★★★</div>
+          <p class="testimonial-text">"The enrichment questionnaire is genius. Instead of rejecting candidates with incomplete CVs, we ask them the right questions. Our offer acceptance rate went up significantly."</p>
+          <div class="testimonial-author">
+            <div class="testimonial-avatar" style="background:linear-gradient(135deg,#d97706,#dc2626)">P</div>
+            <div>
+              <div class="testimonial-name">Priyanka Nair</div>
+              <div class="testimonial-role">Talent Partner, Verdant Co.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════ DISCLAIMER NOTE -->
+  <section style="padding:48px 0;background:var(--off);border-top:1px solid #eef0f9" id="guide">
+    <div class="container">
+      <div style="max-width:720px;margin:0 auto;text-align:center" data-reveal>
+        <div style="width:44px;height:44px;border-radius:12px;background:#fef3c7;display:grid;place-items:center;margin:0 auto 16px;font-size:22px">⚠️</div>
+        <h3 style="font-size:22px;font-weight:700;color:var(--ink);margin-bottom:10px">A note on AI and hiring</h3>
+        <p style="font-size:14px;color:var(--ink-dim);line-height:1.8">
+          Validator is an AI-assisted tool. All outputs — scores, recommendations, and evaluations — are generated by a large language model and <strong>must be reviewed by a qualified human professional</strong> before being used in any hiring decision. Validator does not make hiring decisions; it helps you make better ones. Users are responsible for ensuring their use complies with applicable employment and anti-discrimination laws.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════ CTA -->
+  <section class="cta-section">
+    <div class="container" style="position:relative;z-index:1">
+      <h2 class="cta-title">Start evaluating candidates<br />the right way</h2>
+      <p class="cta-subtitle">Works with Anthropic, OpenAI, Groq, Gemini, Mistral &amp; Qwen. Your data never leaves your browser.</p>
+      <div class="cta-actions">
+        <a href="./index.html?register=true" class="btn-cta-primary">
+          Create Free Account
+          <svg class="ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+        <a href="./index.html" class="btn-cta-outline">
+          Sign In
+        </a>
+      </div>
+      <div class="cta-note">No credit card required · Bring your own API key · Supports 6 AI providers · All data stays in your browser</div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════ FOOTER -->
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-top">
+        <div class="footer-brand">
+          <div class="footer-logo">
+            <div class="footer-logo-icon">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+            </div>
+            <span class="footer-logo-text">Validator</span>
+          </div>
+          <p class="footer-tagline">AI-powered recruiting intelligence. Analyse JDs, score CVs, compare candidates — and hire better.</p>
+        </div>
+
+        <div class="footer-col">
+          <h4>Product</h4>
+          <ul>
+            <li><a href="#how-it-works">How it works</a></li>
+            <li><a href="#features">Features</a></li>
+            <li><a href="./index.html">Sign In</a></li>
+            <li><a href="./index.html?register=true">Create Account</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h4>Modules</h4>
+          <ul>
+            <li><a href="./index.html">JD Analysis</a></li>
+            <li><a href="./index.html">CV Evaluation</a></li>
+            <li><a href="./index.html">Candidate Compare</a></li>
+            <li><a href="./index.html">LinkedIn Sourcing</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h4>Legal</h4>
+          <ul>
+            <li><a href="./index.html?register=true">Terms of Use</a></li>
+            <li><a href="#guide">AI Disclaimer</a></li>
+            <li><a href="#">Privacy</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <div class="footer-bottom-text">© 2025 Validator. MIT License.</div>
+        <div class="footer-disclaimer">
+          AI outputs must be reviewed by a human before any hiring decision. Validator is a decision-support tool — not a decision-maker. Users are responsible for compliance with applicable employment laws.
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ═══════════════════════════════════════════════ SCRIPTS -->
+  <script>
+    // Nav scroll shadow
+    const navbar = document.getElementById('navbar');
+    window.addEventListener('scroll', () => {
+      navbar.classList.toggle('scrolled', window.scrollY > 10);
+    });
+
+    // Reveal on scroll
+    const reveals = document.querySelectorAll('[data-reveal]');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+    reveals.forEach(el => observer.observe(el));
+
+    // Handle register param — pass it through to the app
+    // Links with ?register=true will open the app with register tab active
+    document.querySelectorAll('a[href*="register=true"]').forEach(link => {
+      link.addEventListener('click', (e) => {
+        // The app reads sessionStorage on load to pre-open register
+        sessionStorage.setItem('validator_open_register', '1');
+      });
+    });
+
+    // Animate score ring on page load
+    const ring = document.querySelector('.hero-card-main circle:last-child');
+    if (ring) {
+      setTimeout(() => {
+        ring.style.transition = 'stroke-dashoffset 1.4s cubic-bezier(.22,1,.36,1)';
+        ring.style.strokeDashoffset = '47.75';
+      }, 800);
+    }
+  </script>
+
+</body>
+</html>
