@@ -85,7 +85,36 @@ export const importData = (jsonStr) => {
   return data.store || {};
 };
 
-// ── Download text ─────────────────────────────────────────────
+// ── Outreach / Messages ───────────────────────────────────────
+export const saveMessage = (jdKey, candName, msg) => {
+  const s = getStore();
+  if (!s[jdKey]?.candidates?.[candName]) return s;
+  const c = s[jdKey].candidates[candName];
+  c.messages = [...(c.messages || []), { ...msg, id: `msg_${Date.now()}_${Math.random().toString(36).slice(2,7)}`, ts: Date.now() }];
+  return setStore(s);
+};
+
+export const updateMessage = (jdKey, candName, msgId, patch) => {
+  const s = getStore();
+  const c = s[jdKey]?.candidates?.[candName]; if (!c) return s;
+  c.messages = (c.messages || []).map(m => m.id === msgId ? { ...m, ...patch } : m);
+  return setStore(s);
+};
+
+export const deleteMessage = (jdKey, candName, msgId) => {
+  const s = getStore();
+  const c = s[jdKey]?.candidates?.[candName]; if (!c) return s;
+  c.messages = (c.messages || []).filter(m => m.id !== msgId);
+  return setStore(s);
+};
+
+// Save a CV snapshot before re-evaluation
+export const saveCVSnapshot = (jdKey, candName, snapshot) => {
+  const s = getStore();
+  const c = s[jdKey]?.candidates?.[candName]; if (!c) return s;
+  c.cvHistory = [...(c.cvHistory || []).slice(-4), { ...snapshot, ts: Date.now() }]; // keep last 5
+  return setStore(s);
+};
 export const dlText = (filename, content) => {
   const a = document.createElement('a');
   a.href = URL.createObjectURL(new Blob([content], { type: 'text/plain' }));

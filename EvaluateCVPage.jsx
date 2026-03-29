@@ -3,11 +3,11 @@ import {
   Btn, Card, Input, TextArea, SectionHeader, ResultBlock,
   StepIndicator, ScoreRing, RecBadge, StatusBadge, ScoreChart,
   EmptyState, Spinner, Label, Badge, STATUS_CFG,
-} from './UI.jsx';
-import Icon from './Icon.jsx';
-import { PROMPTS } from './prompts.js';
-import { callAI, parseScore, stripMeta } from './api.js';
-import { saveCandidate, deleteCandidate, logActivity, dlText } from './storage.js';
+} from '../components/UI.jsx';
+import Icon from '../components/Icon.jsx';
+import { PROMPTS } from '../lib/prompts.js';
+import { callAI, parseScore, stripMeta } from '../lib/api.js';
+import { saveCandidate, deleteCandidate, logActivity, dlText } from '../lib/storage.js';
 
 const STEP_LABELS = ['Select JD', 'Candidate Details', 'Evaluate & Decide'];
 
@@ -349,6 +349,11 @@ export default function EvaluateCVPage({ user, aiConfig, store, onStoreChange, p
             `${candName.replace(/\s+/g,'_')}_${(selJD||'').replace(/\s+/g,'_')}_report.txt`,
             buildReport(currentJD,{name:candName,cvText,eval:cvEval,decision,questionnaire,score:cvScore,status:candStatus,notes:candNotes})
           )}><Icon n="download" size={13}/>Export Report</Btn>
+        )}
+        {selCand && (
+          <Btn v="indigo" sm onClick={()=>onNavigate('outreach',selJD,selCand)}>
+            <Icon n="send" size={13}/>Outreach
+          </Btn>
         )}
       </div>
 

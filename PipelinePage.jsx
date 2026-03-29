@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
-import { Btn, Card, SectionHeader, RecBadge, ScoreChart, EmptyState, STATUS_CFG } from './UI.jsx';
-import Icon from './Icon.jsx';
-import { saveCandidate } from './storage.js';
+import { Btn, Card, SectionHeader, RecBadge, ScoreChart, EmptyState, STATUS_CFG } from '../components/UI.jsx';
+import Icon from '../components/Icon.jsx';
+import { saveCandidate } from '../lib/storage.js';
 
 export default function PipelinePage({ store, onStoreChange, onNavigate, notify, preselectedJD }) {
   const [selJD, setSelJD] = useState(preselectedJD || null);
@@ -95,6 +95,11 @@ export default function PipelinePage({ store, onStoreChange, onNavigate, notify,
                                     → {STATUS_CFG[x].label}
                                   </button>
                                 ))}
+                                <button
+                                  onClick={e => { e.stopPropagation(); onNavigate('outreach', selJD, c.name); }}
+                                  style={{ fontSize: 10, padding: '2px 7px', borderRadius: 5, border: '1px solid #c5c9fb', background: '#eef0ff', color: '#5b6af5', cursor: 'pointer', fontFamily: 'inherit' }}>
+                                  ✉ Outreach
+                                </button>
                               </div>
                             </div>
                           ))}

@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import { registerUser, loginUser } from './auth.js';
-import { Btn, Input, Card } from './UI.jsx';
-import Icon from './Icon.jsx';
-import { PROVIDERS, PROVIDER_LIST } from './api.js';
+import { registerUser, loginUser } from '../lib/auth.js';
+import { Btn, Input, Card } from '../components/UI.jsx';
+import Icon from '../components/Icon.jsx';
+import { PROVIDERS, PROVIDER_LIST } from '../lib/api.js';
 
 export default function AuthPage({ onAuth }) {
   const openRegister = () => {

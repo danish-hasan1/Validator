@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { Card } from './UI.jsx';
-import Icon from './Icon.jsx';
+import { Card } from '../components/UI.jsx';
+import Icon from '../components/Icon.jsx';
 
 const STEPS = [
   { icon:'🔑', title:'Step 1 — Set Your API Key', tab:'settings', openLabel:'Open Settings', color:'#5b6af5', bg:'#eef0ff',
@@ -28,6 +28,21 @@ const STEPS = [
     description:'Turn any saved JD into LinkedIn Recruiter search parameters and Boolean strings.',
     steps:['Go to LinkedIn','Select a saved JD (must have run Step 1 analysis first)','Click Generate Sourcing Parameters','Copy Boolean strings into LinkedIn Recruiter\'s search field','Use Narrow for precision, Broad for discovery, Primary for balance'],
     tip:'Output includes job title variants, skill keywords, industry targets, and seniority filters tailored to your role.' },
+  { icon:'📨', title:'Step 7 — Outreach & Re-Evaluation', tab:'outreach', openLabel:'Open Outreach', color:'#7c3aed', bg:'#f5f3ff',
+    description:'Message candidates directly via email or WhatsApp, find their email, send enrichment Q&A, log replies, and re-evaluate updated CVs.',
+    steps:[
+      'Go to Outreach in the sidebar',
+      'Select the JD and candidate you want to reach out to',
+      'Add their email and/or WhatsApp number in Contact Details',
+      'Use Email Finder if you don\'t have their email — AI infers likely formats from their name and company',
+      'In Compose, pick channel (Email or WhatsApp) and message type',
+      'Click "Generate with AI" for a personalised message, edit it, then click "Open in Email Client" or "Open in WhatsApp"',
+      'Log the candidate\'s reply in the Thread tab to keep a full communication record',
+      'When the candidate sends answers to the enrichment questionnaire, go to "Update & Re-Evaluate"',
+      'Paste their answers — AI integrates them into an improved CV, then re-evaluate to see the score change',
+    ],
+    tip:'The "Send Q&A" message type in Compose automatically formats the enrichment questionnaire from Evaluate CV into a ready-to-send email or WhatsApp message.',
+  },
 ];
 
 const FAQ = [
@@ -39,6 +54,8 @@ const FAQ = [
   { q:'Can I reuse a JD for multiple candidates?', a:'Yes — this is the core design. Save a JD once and evaluate unlimited candidates against it. All results are grouped and searchable under that JD.' },
   { q:'What is the Enrichment Questionnaire?', a:'When a CV has gaps, it generates targeted questions to give the candidate a chance to clarify their experience. Questions are framed positively — never judgmental. Use "Email Format" to export as a ready-to-send email.' },
   { q:'Why should I use Compare instead of just looking at scores?', a:'Individual scores tell you how each candidate performs against the JD. Compare shows you how they perform against each other — with ranking, critical differentiators, risk assessment, and a final panel recommendation. It turns individual scores into a decision.' },
+  { q:'How does the Outreach email/WhatsApp work?', a:'Validator generates personalised messages using AI and opens them in your default email client (via mailto:) or WhatsApp Web. Your messages are sent through your own accounts — Validator never sends on your behalf or stores any sent message externally. All communication logs are saved in your browser only.' },
+  { q:'What is the Update & Re-Evaluate feature?', a:'After a candidate replies to the enrichment questionnaire, paste their answers into "Update & Re-Evaluate". AI integrates the answers into an improved CV, then re-scores it against the same JD. You see the before/after score change with a summary of what improved and what gaps remain.' },
 ];
 
 export default function GuidePage() {

@@ -101,80 +101,174 @@ ${cv}`,
 **BIGGEST RISK:**
 [One specific sentence]
 
-**INTERVIEW KILLER QUESTION:**
-[One targeted, high-signal question to probe their weakest critical skill]
+**KILLER INTERVIEW QUESTION:**
+[The one question that would most quickly confirm or reject fit — and why it matters]
 
-Candidate Evaluation:
+**OVERALL ASSESSMENT:**
+[2–3 sentences maximum]
+
+CV Evaluation:
 ${cvEval}`,
 
-  p5: (jd, cv, gaps) => `You are an expert technical interviewer.
+  p5: (jdAnalysis, skillMatrix, cvEval) => `Generate a targeted clarification questionnaire for this candidate.
 
-Based on the JD and CV, identify specific competencies that are missing or weakly evidenced but critical for the role.
+Purpose: Uncover experience that may exist but wasn't expressed in the CV. NOT an assessment — an enrichment exercise.
 
-Generate 3-5 high-signal enrichment questions for the candidate to answer via email. 
+Principles:
+- Never assume incompetence — assume possible omission
+- Do NOT reference scores, gaps, or evaluation language
+- Avoid yes/no questions — encourage 3–6 sentence responses
+- Questions should translate naturally into CV bullet points
 
-Rules: 
-- Don't "test" them; frame questions as "Help us understand your experience with..."
-- Be specific to the role's actual challenges.
-- Keep the email tone professional and encouraging.
+## 1. Role-Relevant Experience Clarification
+2–4 questions on critical competencies with limited evidence.
 
-Job Description:
-${jd}
+## 2. Depth, Complexity & Proficiency
+2–4 questions on scale, tools, environments, maturity.
 
-Candidate CV:
-${cv}
+## 3. Adjacent or Transferable Experience
+2–4 questions identifying equivalent experience.
 
-Identified Gaps:
-${gaps}`,
+## 4. Implicit Seniority & Behavioral Capabilities
+2–4 questions on leadership, influence, decision-making.
 
-  p6: (jdAnalysis) => `Convert the JD analysis into a high-performance LinkedIn sourcing strategy.
+## 5. Ownership, Impact & Outcomes
+2–4 questions on measurable outcomes and accountability.
 
-## 1. Boolean Search Strings
-- Broad (Market-wide)
-- Targeted (Direct Competitors)
-- Niche (Specific Skillset)
+Number all questions sequentially. No commentary — questions only, ready to send to the candidate.
 
-## 2. Job Title Variants
-- Standard and creative variants to catch all profiles.
+JD Analysis: ${jdAnalysis}
+Skill Matrix: ${skillMatrix}
+CV Evaluation: ${cvEval}`,
 
-## 3. LinkedIn Recruiter Filters
-- Skills, seniority, keywords, industries.
+  p6: (jdAnalysis) => `Convert this role analysis into LinkedIn Recruiter search parameters.
 
-## 4. Ideal Profile "Lookalikes"
-- Types of companies or backgrounds to target.
+## 1. Job Titles
+**Primary:** ... **Variants:** ... **Adjacent:** ...
+
+## 2. Skills & Keywords
+**Core:** ... **Supporting:** ... **Transferable:** ...
+
+## 3. Company / Industry Background
+**Target sectors:** ... **Company types:** ...
+
+## 4. Boolean Search Strings
+**Primary** (balanced):
+\`\`\`
+[string]
+\`\`\`
+**Broad** (discovery):
+\`\`\`
+[string]
+\`\`\`
+**Narrow** (precision):
+\`\`\`
+[string]
+\`\`\`
+
+## 5. LinkedIn Recruiter Filters
+**Seniority:** ... **Function:** ... **Experience:** ... **Additional:** ...
+
+No commentary. Recruiter-ready output only.
 
 JD Analysis:
 ${jdAnalysis}`,
 
-  p7: (jd, cv, type = 'linkedin') => `You are a world-class executive recruiter and outreach specialist.
+  compare: (jdName, candidates) => `You are a senior hiring panel facilitator comparing ${candidates.length} candidates for: ${jdName}
 
-Generate a highly personalized, conversion-focused outreach message (Type: ${type}) to the candidate below based on the Job Description.
+${candidates.map((c, i) => `### ${i+1}. ${c.name}\nScore: ${c.score}/100 | ${c.recommendation}\n\n${c.eval}`).join('\n\n---\n\n')}
 
-## 1. Context & Hook
-- Reference a specific achievement, skill, or role transition in their CV.
-- Align it with the core mission of the role in the JD.
+## 1. Ranking & Recommendation Order
+Rank all ${candidates.length} candidates with clear rationale. One decisive line per candidate.
 
-## 2. Value Proposition
-- Why is this role a step up for them?
-- What problem will they solve that matches their expertise?
+## 2. Comparative Strengths Matrix
+Table showing where each candidate excels or falls short on key competencies.
 
-## 3. Decisive Call to Action
-- Low-friction next step (quick chat, specific question).
+## 3. Critical Differentiators
+The 2–3 factors that most meaningfully separate the top candidates.
 
-## 4. Tone & Style
-- Professional, yet warm and conversational.
-- No generic buzzwords. No "I hope this finds you well".
-- Concise.
+## 4. Risk Assessment by Candidate
+Primary hiring risk per candidate, and how material it is.
 
-Job Description:
-${jd}
+## 5. Panel Interview Strategy
+Specific focus areas per candidate to resolve remaining unknowns.
 
-Candidate CV:
-${cv}`,
+## 6. Final Hiring Recommendation
+First-choice with rationale. Contingency if they decline.`,
 
-  p8: (name, company) => `Generate a list of 3 potential professional email addresses for the candidate "${name}" at "${company}". 
-Format: name.surname@company.com, initials@company.com, etc.
-Include a confidence score for each.`,
+  // Outreach: generate personalised email/WhatsApp outreach message
+  outreachMsg: (jdName, candName, candTitle, type, customNote) => `You are a senior recruiter writing a personalised ${type === 'whatsapp' ? 'WhatsApp' : 'email'} outreach message.
+
+Role: ${jdName}
+Candidate: ${candName}${candTitle ? ` (${candTitle})` : ''}
+${customNote ? `Recruiter note: ${customNote}` : ''}
+
+Write a ${type === 'whatsapp' ? 'brief, warm WhatsApp message (3–4 sentences max, conversational, no bullet points)' : 'professional but warm email (subject line + body, concise, no more than 5 sentences)'}. 
+
+Rules:
+- Do NOT use generic phrases like "I came across your profile"
+- Reference the role naturally
+- End with a clear, low-friction call to action (reply, 15-min call, or link to apply)
+- Never mention AI or that this was generated
+- Sound like a real recruiter wrote it
+
+${type === 'email' ? 'Output format:\nSUBJECT: [subject line]\n\n[email body]' : '[WhatsApp message only — no subject]'}`,
+
+  // Email finder: infer likely email formats from candidate info
+  emailFinder: (candName, context) => `You are a recruitment research specialist. Based on the candidate information below, generate the most likely professional email addresses they might use.
+
+Candidate: ${candName}
+Context: ${context}
+
+Generate 3–5 likely email format variations based on common corporate email patterns (firstname.lastname@, firstnamelastname@, f.lastname@, etc.).
+
+If a company or domain can be inferred from the context, use it. Otherwise use common free email domains.
+
+Output ONLY a JSON array on the last line:
+EMAIL_SUGGESTIONS:["email1@domain.com","email2@domain.com","email3@domain.com"]
+
+Before the JSON, briefly explain your reasoning for each suggestion (2 sentences max each).`,
+
+  // Update CV from candidate's questionnaire answers
+  updateCVFromAnswers: (originalCV, questionnaire, answers) => `You are a professional CV writer. A recruiter sent a candidate these clarification questions and received answers. Your job is to incorporate the candidate's answers into their CV to produce an improved, more complete version.
+
+Rules:
+- Keep the original CV structure and formatting style
+- Integrate the answers naturally into the relevant sections (don't just append them)
+- Only add or expand — never remove or contradict existing content
+- Use professional CV language throughout
+- Do NOT add a section called "Interview Answers" — integrate seamlessly
+
+Original CV:
+${originalCV}
+
+Questions sent to candidate:
+${questionnaire}
+
+Candidate's answers:
+${answers}
+
+Output the complete updated CV text only. No commentary before or after.`,
+
+  // Re-evaluate with updated CV — generate score delta summary
+  reEvalSummary: (oldScore, newScore, oldEval, newEval, candName) => `You are comparing two evaluations of the same candidate, ${candName}, after their CV was updated with additional information.
+
+Previous score: ${oldScore}/100
+New score: ${newScore}/100
+Score change: ${newScore - oldScore > 0 ? '+' : ''}${newScore - oldScore} points
+
+Previous evaluation summary:
+${oldEval?.slice(0, 800) || 'N/A'}
+
+New evaluation summary:
+${newEval?.slice(0, 800) || 'N/A'}
+
+Write a concise re-evaluation summary (3–5 bullet points) covering:
+- What new information was revealed
+- Which competencies improved and by how much
+- Whether the hiring recommendation changed
+- Key remaining gaps (if any)
+- Updated recommendation`,
 };
 
 export const JD_TEMPLATES = [
