@@ -1,9 +1,9 @@
 import { useState } from 'react';
-import { Btn, Card, SectionHeader, Label } from '../components/UI.jsx';
-import Icon from '../components/Icon.jsx';
-import { updateProviderConfig } from '../lib/auth.js';
-import { exportData, importData, KEYS, LS, getUsers, saveUser } from '../lib/storage.js';
-import { PROVIDERS, PROVIDER_LIST } from '../lib/api.js';
+import { Btn, Card, SectionHeader, Label } from './UI.jsx';
+import Icon from './Icon.jsx';
+import { updateProviderConfig } from './auth.js';
+import { exportData, importData, KEYS, LS, getUsers, saveUser } from './storage.js';
+import { PROVIDERS, PROVIDER_LIST } from './api.js';
 
 const hashPw = (pw) => btoa(encodeURIComponent(pw + '_v1salt'));
 

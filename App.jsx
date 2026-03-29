@@ -1,18 +1,19 @@
 import { useState, useEffect, useCallback } from 'react';
-import { getCurrentUser, logout, seedAdmin, isAdmin, getAIConfig } from './lib/auth.js';
-import { getStore } from './lib/storage.js';
-import { PROVIDERS } from './lib/api.js';
-import AuthPage       from './pages/AuthPage.jsx';
-import SetupJDPage    from './pages/SetupJDPage.jsx';
-import EvaluateCVPage from './pages/EvaluateCVPage.jsx';
-import ComparePage    from './pages/ComparePage.jsx';
-import PipelinePage   from './pages/PipelinePage.jsx';
-import LinkedInPage   from './pages/LinkedInPage.jsx';
-import AdminPage      from './pages/AdminPage.jsx';
-import SettingsPage   from './pages/SettingsPage.jsx';
-import GuidePage      from './pages/GuidePage.jsx';
-import { Notification } from './components/UI.jsx';
-import Icon from './components/Icon.jsx';
+import { getCurrentUser, logout, seedAdmin, isAdmin, getAIConfig } from './auth.js';
+import { getStore } from './storage.js';
+import { PROVIDERS } from './api.js';
+import AuthPage       from './AuthPage.jsx';
+import SetupJDPage    from './SetupJDPage.jsx';
+import EvaluateCVPage from './EvaluateCVPage.jsx';
+import ComparePage    from './ComparePage.jsx';
+import PipelinePage   from './PipelinePage.jsx';
+import LinkedInPage   from './LinkedInPage.jsx';
+import OutreachPage   from './OutreachPage.jsx';
+import AdminPage      from './AdminPage.jsx';
+import SettingsPage   from './SettingsPage.jsx';
+import GuidePage      from './GuidePage.jsx';
+import { Notification } from './UI.jsx';
+import Icon from './Icon.jsx';
 
 seedAdmin();
 
@@ -22,6 +23,7 @@ const NAV = [
   { id: 'compare',  label: 'Compare',          icon: 'compare' },
   { id: 'pipeline', label: 'Pipeline',         icon: 'kanban'  },
   { id: 'linkedin', label: 'LinkedIn',         icon: 'li'      },
+  { id: 'outreach', label: 'Outreach',         icon: 'mail'    },
   { id: 'guide',    label: 'Guide',            icon: 'book'    },
 ];
 
@@ -201,8 +203,9 @@ export default function App() {
           {tab==='cv'       && <EvaluateCVPage {...pageProps} key={`cv-${cvContext.jd}-${cvContext.cand}`} preselectedJD={cvContext.jd} preselectedCand={cvContext.cand} />}
           {tab==='compare'  && <ComparePage    user={user} aiConfig={aiConfig} store={store} onNavigate={navigate} notify={notify} />}
           {tab==='pipeline' && <PipelinePage   store={store} onStoreChange={handleStoreChange} onNavigate={navigate} notify={notify} preselectedJD={pipContext.jd} />}
-          {tab==='linkedin' && <LinkedInPage   user={user} aiConfig={aiConfig} store={store} notify={notify} />}
-          {tab==='guide'    && <GuidePage />}
+          {tab==='linkedin' && <LinkedInPage   {...pageProps} />}
+          {tab==='outreach' && <OutreachPage   {...pageProps} />}
+          {tab==='guide'    && <GuidePage      onNavigate={navigate} />}
           {tab==='admin'    && isAdmin(user) && <AdminPage {...pageProps} />}
           {tab==='settings' && <SettingsPage user={user} onUserUpdate={handleUserUpdate} notify={notify} />}
         </div>

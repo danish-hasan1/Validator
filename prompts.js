@@ -101,100 +101,80 @@ ${cv}`,
 **BIGGEST RISK:**
 [One specific sentence]
 
-**KILLER INTERVIEW QUESTION:**
-[The one question that would most quickly confirm or reject fit — and why it matters]
+**INTERVIEW KILLER QUESTION:**
+[One targeted, high-signal question to probe their weakest critical skill]
 
-**OVERALL ASSESSMENT:**
-[2–3 sentences maximum]
-
-CV Evaluation:
+Candidate Evaluation:
 ${cvEval}`,
 
-  p5: (jdAnalysis, skillMatrix, cvEval) => `Generate a targeted clarification questionnaire for this candidate.
+  p5: (jd, cv, gaps) => `You are an expert technical interviewer.
 
-Purpose: Uncover experience that may exist but wasn't expressed in the CV. NOT an assessment — an enrichment exercise.
+Based on the JD and CV, identify specific competencies that are missing or weakly evidenced but critical for the role.
 
-Principles:
-- Never assume incompetence — assume possible omission
-- Do NOT reference scores, gaps, or evaluation language
-- Avoid yes/no questions — encourage 3–6 sentence responses
-- Questions should translate naturally into CV bullet points
+Generate 3-5 high-signal enrichment questions for the candidate to answer via email. 
 
-## 1. Role-Relevant Experience Clarification
-2–4 questions on critical competencies with limited evidence.
+Rules: 
+- Don't "test" them; frame questions as "Help us understand your experience with..."
+- Be specific to the role's actual challenges.
+- Keep the email tone professional and encouraging.
 
-## 2. Depth, Complexity & Proficiency
-2–4 questions on scale, tools, environments, maturity.
+Job Description:
+${jd}
 
-## 3. Adjacent or Transferable Experience
-2–4 questions identifying equivalent experience.
+Candidate CV:
+${cv}
 
-## 4. Implicit Seniority & Behavioral Capabilities
-2–4 questions on leadership, influence, decision-making.
+Identified Gaps:
+${gaps}`,
 
-## 5. Ownership, Impact & Outcomes
-2–4 questions on measurable outcomes and accountability.
+  p6: (jdAnalysis) => `Convert the JD analysis into a high-performance LinkedIn sourcing strategy.
 
-Number all questions sequentially. No commentary — questions only, ready to send to the candidate.
+## 1. Boolean Search Strings
+- Broad (Market-wide)
+- Targeted (Direct Competitors)
+- Niche (Specific Skillset)
 
-JD Analysis: ${jdAnalysis}
-Skill Matrix: ${skillMatrix}
-CV Evaluation: ${cvEval}`,
+## 2. Job Title Variants
+- Standard and creative variants to catch all profiles.
 
-  p6: (jdAnalysis) => `Convert this role analysis into LinkedIn Recruiter search parameters.
+## 3. LinkedIn Recruiter Filters
+- Skills, seniority, keywords, industries.
 
-## 1. Job Titles
-**Primary:** ... **Variants:** ... **Adjacent:** ...
-
-## 2. Skills & Keywords
-**Core:** ... **Supporting:** ... **Transferable:** ...
-
-## 3. Company / Industry Background
-**Target sectors:** ... **Company types:** ...
-
-## 4. Boolean Search Strings
-**Primary** (balanced):
-\`\`\`
-[string]
-\`\`\`
-**Broad** (discovery):
-\`\`\`
-[string]
-\`\`\`
-**Narrow** (precision):
-\`\`\`
-[string]
-\`\`\`
-
-## 5. LinkedIn Recruiter Filters
-**Seniority:** ... **Function:** ... **Experience:** ... **Additional:** ...
-
-No commentary. Recruiter-ready output only.
+## 4. Ideal Profile "Lookalikes"
+- Types of companies or backgrounds to target.
 
 JD Analysis:
 ${jdAnalysis}`,
 
-  compare: (jdName, candidates) => `You are a senior hiring panel facilitator comparing ${candidates.length} candidates for: ${jdName}
+  p7: (jd, cv, type = 'linkedin') => `You are a world-class executive recruiter and outreach specialist.
 
-${candidates.map((c, i) => `### ${i+1}. ${c.name}\nScore: ${c.score}/100 | ${c.recommendation}\n\n${c.eval}`).join('\n\n---\n\n')}
+Generate a highly personalized, conversion-focused outreach message (Type: ${type}) to the candidate below based on the Job Description.
 
-## 1. Ranking & Recommendation Order
-Rank all ${candidates.length} candidates with clear rationale. One decisive line per candidate.
+## 1. Context & Hook
+- Reference a specific achievement, skill, or role transition in their CV.
+- Align it with the core mission of the role in the JD.
 
-## 2. Comparative Strengths Matrix
-Table showing where each candidate excels or falls short on key competencies.
+## 2. Value Proposition
+- Why is this role a step up for them?
+- What problem will they solve that matches their expertise?
 
-## 3. Critical Differentiators
-The 2–3 factors that most meaningfully separate the top candidates.
+## 3. Decisive Call to Action
+- Low-friction next step (quick chat, specific question).
 
-## 4. Risk Assessment by Candidate
-Primary hiring risk per candidate, and how material it is.
+## 4. Tone & Style
+- Professional, yet warm and conversational.
+- No generic buzzwords. No "I hope this finds you well".
+- Concise.
 
-## 5. Panel Interview Strategy
-Specific focus areas per candidate to resolve remaining unknowns.
+Job Description:
+${jd}
 
-## 6. Final Hiring Recommendation
-First-choice with rationale. Contingency if they decline.`,
+Candidate CV:
+${cv}`,
+
+  p8: (name, company) => `Generate a list of 3 potential professional email addresses for the candidate "${name}" at "${company}". 
+Format: name.surname@company.com, initials@company.com, etc.
+Include a confidence score for each.`,
 };
 
 export const JD_TEMPLATES = [

@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import { Btn, Card, SectionHeader, ScoreChart, StatusBadge, Badge, EmptyState } from '../components/UI.jsx';
-import Icon from '../components/Icon.jsx';
-import { getUsers, saveUser, deleteUser, getLog, clearLog, exportData } from '../lib/storage.js';
-import { PROVIDERS } from '../lib/api.js';
+import { Btn, Card, SectionHeader, ScoreChart, StatusBadge, Badge, EmptyState } from './UI.jsx';
+import Icon from './Icon.jsx';
+import { getUsers, saveUser, deleteUser, getLog, clearLog, exportData } from './storage.js';
+import { PROVIDERS } from './api.js';
 
 const OP_LABELS = { p1:'JD Analysis', p2:'Skill Matrix', p3:'CV Scoring', p4:'Decision', p5:'Enrichment Q&A', p6:'LinkedIn', compare:'Comparison' };
 const OP_COLORS = { p1:'#5b6af5', p2:'#7c3aed', p3:'#b45309', p4:'#ea580c', p5:'#059669', p6:'#0284c7', compare:'#7c3aed' };

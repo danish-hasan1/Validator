@@ -3,11 +3,11 @@ import {
   Btn, Card, Input, TextArea, SectionHeader, ResultBlock,
   StepIndicator, ScoreRing, RecBadge, StatusBadge, ScoreChart,
   EmptyState, Spinner, Label, Badge, STATUS_CFG,
-} from '../components/UI.jsx';
-import Icon from '../components/Icon.jsx';
-import { PROMPTS } from '../lib/prompts.js';
-import { callAI, parseScore, stripMeta } from '../lib/api.js';
-import { saveCandidate, deleteCandidate, logActivity, dlText } from '../lib/storage.js';
+} from './UI.jsx';
+import Icon from './Icon.jsx';
+import { PROMPTS } from './prompts.js';
+import { callAI, parseScore, stripMeta } from './api.js';
+import { saveCandidate, deleteCandidate, logActivity, dlText } from './storage.js';
 
 const STEP_LABELS = ['Select JD', 'Candidate Details', 'Evaluate & Decide'];
 
