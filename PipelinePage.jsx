@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
-import { Btn, Card, SectionHeader, RecBadge, ScoreChart, EmptyState, STATUS_CFG } from './UI.jsx';
-import Icon from './Icon.jsx';
-import { saveCandidate } from './storage.js';
+import { Btn, Card, SectionHeader, RecBadge, ScoreChart, EmptyState, STATUS_CFG } from '../components/UI.jsx';
+import Icon from '../components/Icon.jsx';
+import { saveCandidate } from '../lib/storage.js';
 
 export default function PipelinePage({ store, onStoreChange, onNavigate, notify, preselectedJD }) {
   const [selJD, setSelJD] = useState(preselectedJD || null);

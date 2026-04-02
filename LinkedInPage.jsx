@@ -1,9 +1,9 @@
 import { useState } from 'react';
-import { Btn, Card, SectionHeader, EmptyState, ResultBlock } from './UI.jsx';
-import Icon from './Icon.jsx';
-import { PROMPTS } from './prompts.js';
-import { callAI } from './api.js';
-import { logActivity } from './storage.js';
+import { Btn, Card, SectionHeader, EmptyState, ResultBlock } from '../components/UI.jsx';
+import Icon from '../components/Icon.jsx';
+import { PROMPTS } from '../lib/prompts.js';
+import { callAI } from '../lib/api.js';
+import { logActivity } from '../lib/storage.js';
 
 export default function LinkedInPage({ user, aiConfig, store, notify }) {
   const [selJD,   setSelJD]   = useState(null);

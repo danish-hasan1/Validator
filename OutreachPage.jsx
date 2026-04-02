@@ -3,14 +3,14 @@ import {
   Btn, Card, SectionHeader, Input, TextArea, Label,
   ScoreRing, RecBadge, StatusBadge, EmptyState, Spinner,
   MarkdownContent, Badge,
-} from './UI.jsx';
-import Icon from './Icon.jsx';
-import { PROMPTS } from './prompts.js';
-import { callAI, parseScore, stripMeta } from './api.js';
+} from '../components/UI.jsx';
+import Icon from '../components/Icon.jsx';
+import { PROMPTS } from '../lib/prompts.js';
+import { callAI, parseScore, stripMeta } from '../lib/api.js';
 import {
   saveCandidate, saveMessage, updateMessage, deleteMessage,
   saveCVSnapshot, logActivity,
-} from './storage.js';
+} from '../lib/storage.js';
 
 // ── Helpers ────────────────────────────────────────────────────────────────
 const fmtTime = (ts) => {

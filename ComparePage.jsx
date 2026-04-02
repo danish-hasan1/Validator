@@ -1,9 +1,9 @@
 import { useState } from 'react';
-import { Btn, Card, SectionHeader, ResultBlock, ScoreRing, RecBadge, StatusBadge, ScoreChart, EmptyState, Spinner } from './UI.jsx';
-import Icon from './Icon.jsx';
-import { PROMPTS } from './prompts.js';
-import { callAI, stripMeta } from './api.js';
-import { logActivity } from './storage.js';
+import { Btn, Card, SectionHeader, ResultBlock, ScoreRing, RecBadge, StatusBadge, ScoreChart, EmptyState, Spinner } from '../components/UI.jsx';
+import Icon from '../components/Icon.jsx';
+import { PROMPTS } from '../lib/prompts.js';
+import { callAI, stripMeta } from '../lib/api.js';
+import { logActivity } from '../lib/storage.js';
 
 export default function ComparePage({ user, aiConfig, store, onNavigate, notify }) {
   const [selJD,    setSelJD]    = useState(null);

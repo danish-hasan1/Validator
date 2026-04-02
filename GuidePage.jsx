@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { Card } from './UI.jsx';
-import Icon from './Icon.jsx';
+import { Card } from '../components/UI.jsx';
+import Icon from '../components/Icon.jsx';
 
 const STEPS = [
   { icon:'🔑', title:'Step 1 — Set Your API Key', tab:'settings', openLabel:'Open Settings', color:'#5b6af5', bg:'#eef0ff',
