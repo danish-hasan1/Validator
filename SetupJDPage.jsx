@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
-import { Btn, TextArea, Input, Card, SectionHeader, ResultBlock, Spinner, ScoreChart } from '../components/UI.jsx';
-import Icon from '../components/Icon.jsx';
-import { JD_TEMPLATES, PROMPTS } from '../lib/prompts.js';
-import { callAI } from '../lib/api.js';
-import { saveJDEntry, deleteJDEntry, logActivity, getDraft, saveDraft } from '../lib/storage.js';
+import { Btn, TextArea, Input, Card, SectionHeader, ResultBlock, Spinner, ScoreChart } from './UI.jsx';
+import Icon from './Icon.jsx';
+import { JD_TEMPLATES, PROMPTS } from './prompts.js';
+import { callAI } from './api.js';
+import { saveJDEntry, deleteJDEntry, logActivity, getDraft, saveDraft } from './storage.js';
 
 export default function SetupJDPage({ user, aiConfig, store, onStoreChange, onNavigate, notify }) {
   const [jdName,        setJdName]        = useState('');
