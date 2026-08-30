@@ -3,7 +3,7 @@ import { Btn, Card, SectionHeader, Label, Spinner } from './UI.jsx';
 import Icon from './Icon.jsx';
 import { updateProviderConfig } from './auth.js';
 import { exportData, importData, KEYS, LS, getUsers, saveUser } from './storage.js';
-import { PROVIDERS, PROVIDER_LIST, callAI } from './api.js';
+import { PROVIDERS, PROVIDER_LIST, callAI, splitKeys } from './api.js';
 
 const hashPw = (pw) => btoa(encodeURIComponent(pw + '_v1salt'));
 
@@ -21,6 +21,7 @@ export default function SettingsPage({ user, onUserUpdate, notify }) {
   const [pwOk,     setPwOk]     = useState(false);
 
   const currentProv = PROVIDERS[provider] || PROVIDERS.anthropic;
+  const keyCount     = splitKeys(apiKey).length;
 
   // Provider change — keep apiKey as-is so user doesn't lose their key
   const handleProviderChange = (pid) => { setTestResult(null);
@@ -126,21 +127,24 @@ export default function SettingsPage({ user, onUserUpdate, notify }) {
         </div>
 
         <div style={{ marginBottom:16 }}>
-          <Label>{currentProv.keyLabel}</Label>
+          <Label>{currentProv.keyLabel}{keyCount>1 ? ` (${keyCount} keys, rotated on rate limits)` : ''}</Label>
           {apiKey && (
             <div style={{ background:'#f0fdf4', border:'1.5px solid #bbf7d0', borderRadius:9, padding:'9px 13px', marginBottom:10, display:'flex', alignItems:'center', gap:9 }}>
               <Icon n="check" size={14} color="#16a34a"/>
-              <span style={{ fontSize:12.5, color:'#15803d', fontFamily:"'Space Mono',monospace" }}>Active: {apiKey.slice(0,8)}…{apiKey.slice(-6)}</span>
+              <span style={{ fontSize:12.5, color:'#15803d', fontFamily:"'Space Mono',monospace" }}>
+                {keyCount>1 ? `${keyCount} keys active` : `Active: ${apiKey.trim().slice(0,8)}…${apiKey.trim().slice(-6)}`}
+              </span>
             </div>
           )}
           <div style={{ position:'relative' }}>
-            <input value={apiKey} onChange={e=>setApiKey(e.target.value)} placeholder={currentProv.keyPlaceholder} type={keyShow?'text':'password'}
-              style={{ width:'100%', padding:'10px 44px 10px 14px', fontSize:13.5, borderRadius:10 }}/>
-            <button onClick={()=>setKeyShow(s=>!s)} style={{ position:'absolute', right:12, top:'50%', transform:'translateY(-50%)', background:'none', border:'none', cursor:'pointer', color:'#8892b0', display:'flex' }}>
+            <textarea value={apiKey} onChange={e=>setApiKey(e.target.value)} placeholder={`${currentProv.keyPlaceholder}\n(paste more than one key, one per line, to rotate between them)`}
+              rows={keyCount>1?3:1}
+              style={{ width:'100%', padding:'10px 44px 10px 14px', fontSize:13.5, borderRadius:10, fontFamily:"'Space Mono',monospace", resize:'vertical', filter: keyShow?'none':'blur(4px)', transition:'filter .1s' }}/>
+            <button onClick={()=>setKeyShow(s=>!s)} style={{ position:'absolute', right:12, top:12, background:'none', border:'none', cursor:'pointer', color:'#8892b0', display:'flex' }}>
               <Icon n={keyShow?'eyeOff':'eye'} size={16}/>
             </button>
           </div>
-          <div style={{ fontSize:11.5, color:'#8892b0', marginTop:5, lineHeight:1.6 }}>{currentProv.keyHint} · Stored only in your browser.</div>
+          <div style={{ fontSize:11.5, color:'#8892b0', marginTop:5, lineHeight:1.6 }}>{currentProv.keyHint} · One key per line to rotate across several on rate limits · Stored only in your browser.</div>
         </div>
 
         <div style={{ display:'flex', gap:8, flexWrap:'wrap', marginBottom:16 }}>

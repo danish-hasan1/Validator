@@ -153,7 +153,7 @@ async function callAnthropic(apiKey, model, prompt, onChunk) {
     },
     body: JSON.stringify({ model, max_tokens: 4000, stream: true, messages: [{ role: 'user', content: prompt }] }),
   });
-  if (!res.ok) { const e = await res.json().catch(() => ({})); throw new Error(e.error?.message || `Anthropic API error ${res.status}`); }
+  if (!res.ok) { const e = await res.json().catch(() => ({})); const err = new Error(e.error?.message || `Anthropic API error ${res.status}`); err.status = res.status; throw err; }
   return streamSSE(res, onChunk);
 }
 
@@ -164,7 +164,7 @@ async function callOpenAICompat(endpoint, apiKey, model, prompt, onChunk, extraH
     headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}`, ...extraHeaders },
     body: JSON.stringify({ model, stream: true, max_tokens: 4000, messages: [{ role: 'user', content: prompt }] }),
   });
-  if (!res.ok) { const e = await res.json().catch(() => ({})); throw new Error(e.error?.message || `API error ${res.status}`); }
+  if (!res.ok) { const e = await res.json().catch(() => ({})); const err = new Error(e.error?.message || `API error ${res.status}`); err.status = res.status; throw err; }
   return streamSSE(res, onChunk);
 }
 
@@ -176,7 +176,7 @@ async function callGemini(apiKey, model, prompt, onChunk) {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }], generationConfig: { maxOutputTokens: 4000 } }),
   });
-  if (!res.ok) { const e = await res.json().catch(() => ({})); throw new Error(e.error?.message || `Gemini API error ${res.status}`); }
+  if (!res.ok) { const e = await res.json().catch(() => ({})); const err = new Error(e.error?.message || `Gemini API error ${res.status}`); err.status = res.status; throw err; }
   const reader = res.body.getReader();
   const dec = new TextDecoder();
   let full = '';
@@ -196,6 +196,15 @@ async function callGemini(apiKey, model, prompt, onChunk) {
   return full;
 }
 
+// ── Multi-key support ────────────────────────────────────────
+// The API-key field may hold several keys (one per line, or comma-separated)
+// for the same provider. splitKeys() normalises that into a list.
+export function splitKeys(raw) {
+  return (raw || '').split(/[\n,]+/).map(k => k.trim()).filter(Boolean);
+}
+
+const isRateLimited = (e) => e?.status === 429 || /rate.?limit/i.test(e?.message || '');
+
 // ── Main dispatcher ───────────────────────────────────────────
 /**
  * Call the AI API for the given provider config.
@@ -209,26 +218,44 @@ export async function callAI(config, prompt, onChunk) {
   if (!provDef) throw new Error(`Unknown provider: ${provider}`);
   const resolvedModel = model || provDef.defaultModel;
 
-  switch (provider) {
-    case 'anthropic':
-      return callAnthropic(apiKey, resolvedModel, prompt, onChunk);
-    case 'openai':
-      return callOpenAICompat('https://api.openai.com/v1', apiKey, resolvedModel, prompt, onChunk);
-    case 'groq':
-      return callOpenAICompat('https://api.groq.com/openai/v1', apiKey, resolvedModel, prompt, onChunk);
-    case 'mistral':
-      return callOpenAICompat('https://api.mistral.ai/v1', apiKey, resolvedModel, prompt, onChunk);
-    case 'qwen':
-      return callOpenAICompat(
-        'https://dashscope-intl.aliyuncs.com/compatible-mode/v1',
-        apiKey, resolvedModel, prompt, onChunk,
-        { 'X-DashScope-SSE': 'enable' }
-      );
-    case 'gemini':
-      return callGemini(apiKey, resolvedModel, prompt, onChunk);
-    default:
-      throw new Error(`Provider "${provider}" not yet supported.`);
+  const dispatch = (key) => {
+    switch (provider) {
+      case 'anthropic':
+        return callAnthropic(key, resolvedModel, prompt, onChunk);
+      case 'openai':
+        return callOpenAICompat('https://api.openai.com/v1', key, resolvedModel, prompt, onChunk);
+      case 'groq':
+        return callOpenAICompat('https://api.groq.com/openai/v1', key, resolvedModel, prompt, onChunk);
+      case 'mistral':
+        return callOpenAICompat('https://api.mistral.ai/v1', key, resolvedModel, prompt, onChunk);
+      case 'qwen':
+        return callOpenAICompat(
+          'https://dashscope-intl.aliyuncs.com/compatible-mode/v1',
+          key, resolvedModel, prompt, onChunk,
+          { 'X-DashScope-SSE': 'enable' }
+        );
+      case 'gemini':
+        return callGemini(key, resolvedModel, prompt, onChunk);
+      default:
+        throw new Error(`Provider "${provider}" not yet supported.`);
+    }
+  };
+
+  const keys = splitKeys(apiKey);
+  if (keys.length <= 1) return dispatch(keys[0] || '');
+
+  // Rotate to the next key only on a rate-limit error — any other failure
+  // (bad key, invalid model, etc.) surfaces immediately instead of masking it.
+  let lastErr;
+  for (let i = 0; i < keys.length; i++) {
+    try {
+      return await dispatch(keys[i]);
+    } catch (e) {
+      lastErr = e;
+      if (!isRateLimited(e) || i === keys.length - 1) throw e;
+    }
   }
+  throw lastErr;
 }
 
 // ── Legacy shim — keeps old callClaude() calls working ────────
