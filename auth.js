@@ -78,9 +78,14 @@ export function seedAdmin() {
 
 /** Build the AI config object used by callAI() */
 export function getAIConfig(user) {
+  const provider = user?.provider || DEFAULT_PROVIDER;
+  const provDef  = PROVIDERS[provider];
+  // Fall back to the current default if the stored model was removed/deprecated
+  // (providers periodically retire model IDs out from under saved user configs).
+  const modelIsValid = provDef?.models?.some(m => m.id === user?.model);
   return {
-    provider: user?.provider || DEFAULT_PROVIDER,
-    apiKey:   user?.apiKey   || '',
-    model:    user?.model    || PROVIDERS[user?.provider || DEFAULT_PROVIDER]?.defaultModel || '',
+    provider,
+    apiKey: user?.apiKey || '',
+    model:  modelIsValid ? user.model : (provDef?.defaultModel || ''),
   };
 }
