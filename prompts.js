@@ -1,3 +1,10 @@
+// Keeps combined multi-document prompts under free-tier token-per-minute caps
+// (e.g. Groq's 8000 TPM) without needing the full text of earlier AI outputs.
+const truncate = (s, max = 3000) => {
+  const str = String(s || '');
+  return str.length > max ? `${str.slice(0, max)}\n…[truncated for length]` : str;
+};
+
 export const PROMPTS = {
   p1: (jd) => `You are the original hiring decision-maker who authored this job description, combined with a senior talent evaluator.
 
@@ -83,10 +90,10 @@ On the very last line output ONLY:
 CANDIDATE_SCORE:{"total":N,"category_scores":{"Core":N,"Secondary":N,"Implicit":N},"recommendation":"Strong Fit","confidence":"High"}
 
 JD Analysis:
-${jdAnalysis}
+${truncate(jdAnalysis)}
 
 Skill Matrix:
-${skillMatrix}
+${truncate(skillMatrix)}
 
 Candidate CV:
 ${cv}`,
@@ -137,9 +144,9 @@ Principles:
 
 Number all questions sequentially. No commentary — questions only, ready to send to the candidate.
 
-JD Analysis: ${jdAnalysis}
-Skill Matrix: ${skillMatrix}
-CV Evaluation: ${cvEval}`,
+JD Analysis: ${truncate(jdAnalysis)}
+Skill Matrix: ${truncate(skillMatrix)}
+CV Evaluation: ${truncate(cvEval)}`,
 
   p6: (jdAnalysis) => `Convert this role analysis into LinkedIn Recruiter search parameters.
 
